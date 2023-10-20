@@ -1,0 +1,29 @@
+.catalogPage__block {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+}
+
+.catalogPage{
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    min-height: 90vh;
+}
+
+.catalogPage__item {
+    width: 100%;
+    padding: 16px 24px;
+    border-radius: 10px;
+    /*opacity: 0.8;*/
+    background: rgba(226, 226, 226, 0.68);
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    color: #060606;
+
+
+
+}

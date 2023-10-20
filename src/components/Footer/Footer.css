@@ -1,0 +1,158 @@
+.footer {
+    width: 100%;
+    height: fit-content;
+    background: #0CE3CB;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 64px 0 40px;
+    margin-top: 40px;
+}
+
+.pcfooter {
+    width: 100%;
+    max-width: 1410px;
+}
+
+.pcfooter__content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.pcfooter__social {
+    display: flex;
+    justify-content: space-between;
+    gap: 13px;
+
+}
+
+.pcfooter__logo img {
+    width: 167.926px;
+    height: 57px;
+}
+
+.pcfooter__about {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.pcfooter__info, .pcfooter__info-text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pcfooter__title-info {
+    color: #FFF;
+    text-align: center;
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    letter-spacing: -0.3px;
+}
+
+.pcfooter__info-item {
+    color: #FFF;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: -0.3px;
+}
+
+.pcfooter__contacts {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pcfooter__title-contacts {
+    color: #FFF;
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    letter-spacing: -0.3px;
+}
+
+.pcfooter__contacts-block {
+    display: flex;
+    gap: 16px 24px;
+    width: 100%;
+    max-width: 640px;
+    flex-wrap: wrap;
+
+}
+
+.pcfooter__contacts-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 300px;
+
+}
+
+.pcfooter__contacts-text {
+    max-width: 240px;
+
+}
+
+.pcfooter__contacts-text, .pcfooter__contacts-text a {
+    color: #FFF;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 120%; /* 19.2px */
+    letter-spacing: -0.3px;
+}
+
+
+.pcfooter__copy, .pcfooter__copy a {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.51);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 120%; /* 21.6px */
+    letter-spacing: -0.3px;
+    margin-top: 36px;
+}
+
+.pcfooter__copy a {
+    opacity: 1 !important;
+    color: #ffffff;
+}
+
+@media screen and (max-width: 1410px) {
+    .footer{
+        display: none;
+    }
+
+}
+
+@media screen and (max-width: 1180px) {
+    .footer__mobile{
+        display: flex;
+    }
+
+    .pcfooter{
+        display: none;
+    }
+
+    .pcfooter__social{
+        justify-content: center;
+    }
+
+    .pcfooter__logo{
+        display: flex;
+        justify-content: center;
+    }
+
+    .mbfooter__item, .mbfooter__item img{
+        width: 100%;
+
+    }
+}
