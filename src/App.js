@@ -52,7 +52,7 @@ function RouterComponent() {
                             </>
                         ) : (
                             <li>
-                                <Link to="/login">Login</Link>
+                                <Link to="/login"></Link>
                             </li>
                         )}
 

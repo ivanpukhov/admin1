@@ -51,10 +51,11 @@ function Login() {
     return (
         <div className="login">
             <h2>Login</h2>
-            <form onSubmit={handleSubmit}>
-                <label>
+            <form onSubmit={handleSubmit} className="checkout__user">
+                <label className="checkout__input">
                     Username:
                     <input
+                        className="checkout__input-item"
                         type="text"
                         name="username"
                         value={credentials.username}
@@ -63,16 +64,19 @@ function Login() {
                 </label>
                 <br/>
 
-                <label>
+                <label className="checkout__input">
                     Password:
                     <input
+                        className="checkout__input-item"
+
                         type="password"
                         name="password"
                         value={credentials.password}
                         onChange={handleChange}
                     />
                 </label>
-                <button type="submit">Login</button>
+                <button                         className="checkout__btn"
+                                                type="submit">Login</button>
             </form>
         </div>
     );
