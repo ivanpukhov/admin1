@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, Link } from 'react-router-dom';
+import {useParams, Link, useNavigate} from 'react-router-dom';
 
 function ProductInfo() {
     const [order, setOrder] = useState(null);
     const [products, setProducts] = useState(null);
     const { id } = useParams();
     const [orderStatus, setOrderStatus] = useState(null);
+    const navigate = useNavigate();  // инициализируйте useNavigate
 
     useEffect(() => {
         const token = localStorage.getItem('jwtToken');
@@ -26,6 +27,21 @@ function ProductInfo() {
         };
         fetchOrder();
     }, [id]);
+
+    const deleteOrder = async () => {
+        try {
+            const token = localStorage.getItem('jwtToken');
+            await axios.delete(`/api/orders/${id}`, {
+                headers: {
+                    Authorization: 'Bearer ' + token
+                }
+            });
+            // Перенаправление на страницу со списком заказов после успешного удаления
+            navigate('/orders');
+        } catch (error) {
+            console.error('Error deleting order:', error);
+        }
+    };
 
     const updateOrderStatus = async (status) => {
         try {
@@ -97,6 +113,13 @@ function ProductInfo() {
             >
                 {orderStatus === 3 ? 'Выполнено' : 'Отметить выполненным'}
             </button>
+            <button
+                className="checkout__btn"
+                onClick={deleteOrder}  // связывание функции deleteOrder с кнопкой
+            >
+                Удалить заказ
+            </button>
+
             <Link className="checkout__btn" to="/orders">Вернуться к списку заказов</Link>
         </div>
     );
