@@ -25,7 +25,7 @@ function OrderList() {
     return (
         <ul>
             {orders.map(order => (
-                <li className={`order__product status-${order.status}`} key={order.id}>
+                <li className={`order__product-p status-${order.status}`} key={order.id}>
                     <Link to={`/orders/${order.id}`}>id: {order.id}:{order.firstName}  </Link>
                 </li>
             ))}

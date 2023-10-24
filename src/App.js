@@ -16,6 +16,7 @@ import SearchResult from "./components/SearchResult/SearchResult";
 import ProductDetail from "./components/Product/ProductDetail/ProductDetail";
 import CatalogPage from "./components/CatalogPage/CatalogPage";
 import Footer from "./components/Footer/Footer";
+import OrderStatistics from "./components/OrderStatistics";
 
 function App() {
     return (
@@ -63,6 +64,7 @@ function RouterComponent() {
 
                     <Route path="/*" element={<ProtectedRoutes />}>
                         <Route path="products/add" element={<ProductAdd />} />
+                        <Route path="statistic" element={<OrderStatistics />} />
                         <Route path="products/:id/edit" element={<ProductEdit />} />
                         <Route path="products/:id" element={<ProductDetail />} />
                         <Route path="products" element={<ProductList />} />

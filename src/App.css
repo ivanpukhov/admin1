@@ -652,11 +652,9 @@ h6 {
     }
 
 
-
     .footer {
         display: none;
     }
-
 
 
     .products {
@@ -672,11 +670,13 @@ h6 {
     }
 
 }
+
 .barMobile {
     position: sticky;
     bottom: 0;
     z-index: 1000; /* чтобы блок был поверх других элементов */
 }
+
 .barMobile {
     width: 100%;
     display: flex;
@@ -688,6 +688,7 @@ h6 {
     background: #fff;
 
 }
+
 .header__btn input {
     width: 100%;
     margin: 0;
@@ -775,3 +776,46 @@ h2 {
 .invalid {
     border: 1px solid red;
 }
+
+.catalog__title-small {
+    width: 100%;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: -0.3px;
+    margin-bottom: 9px;
+    text-align: center;
+
+}
+
+.order__product-add {
+    width: 100%;
+    padding: 20px;
+    font-size: 16px;
+    border-radius: 10px;
+}
+
+.order__add{
+    width: 100%;
+    height: fit-content;
+    background: #FFFFFF;
+    display: flex;
+    overflow-x: scroll;
+    flex-direction: column;
+    border-radius: 10px;
+
+    max-height: 300px;
+    gap: 5px;
+}
+
+.order__add > li{
+    margin: 0 10px;
+    display: flex;
+    width: calc(100% - 20px);
+    border-radius: 10px;
+    padding: 10px;
+    border: 1px solid rgba(204, 204, 204, 0.43);
+}
+
+

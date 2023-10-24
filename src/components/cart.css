@@ -203,7 +203,6 @@ input#delevery__kaspi:checked ~ label.checkout__label-kaspi > .checkout__no {
     align-items: center;
     border-radius: 10px;
     background: #0CE3CB;
-    margin-top: 24px;
     color: #FFF;
     font-size: 20px;
     font-style: normal;

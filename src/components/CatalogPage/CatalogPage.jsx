@@ -9,6 +9,7 @@ const CatalogPage = () => {
                 <Link to="/products/add" className="catalogPage__item ">Добавить продукт</Link>
                 <Link to="/products" className="catalogPage__item ">Перейти к продуктам</Link>
                 <Link to="/orders" className="catalogPage__item ">Заказы</Link>
+                <Link to="/statistic" className="catalogPage__item ">Статистика</Link>
             </div>
         </div>)
 }
