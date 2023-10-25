@@ -162,6 +162,38 @@ function ProductInfo() {
     if (!order || !products) {
         return <div>Loading...</div>;
     }
+    const updateProductQuantity = async (productId, currentQuantity) => {
+        const newQuantity = prompt(`Введите новое количество для товара с ID ${productId}`, currentQuantity);
+
+        if (newQuantity && !isNaN(newQuantity)) {
+            const updatedProducts = products.map(product => {
+                if (product.id === productId) {
+                    return {
+                        ...product,
+                        quantity: parseInt(newQuantity),
+                    };
+                }
+                return product;
+            });
+
+            const updatedOrder = {
+                ...order,
+                products: updatedProducts,
+            };
+
+            try {
+                const token = localStorage.getItem('jwtToken');
+                await axios.put(`/api/orders/${id}`, updatedOrder, {
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                    },
+                });
+                await fetchOrder();
+            } catch (error) {
+                console.error('Error updating product quantity:', error);
+            }
+        }
+    };
 
     const totalPrice = calculateTotalPrice(products); // Вызов функции для расчета общей стоимости
 
@@ -181,6 +213,8 @@ function ProductInfo() {
             <ul>
                 {products.map(product => (
                     <li className="order__product" key={product.id}>
+                        <button onClick={() => updateProductQuantity(product.id, product.quantity)}>🔄</button> {/* Новая кнопка */}
+
                         {product.name} <br/> (Количество: {product.quantity}) {product.price * product.quantity * 0.95} тг.
                         <button onClick={() => deleteProductFromOrder(product.id)}>❌</button>
                     </li>

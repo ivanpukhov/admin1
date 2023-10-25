@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 function ProductAdd() {
+    const [categories, setCategories] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
     const [productData, setProductData] = useState({
         name: '',
         description: '',
@@ -13,6 +15,12 @@ function ProductAdd() {
     });
     const [file, setFile] = useState(null);
 
+    useEffect(() => {
+        axios.get('/api/products/categories').then(response => {
+            setCategories(response.data.map(item => item.category));
+        });
+    }, []);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setProductData({
@@ -21,15 +29,29 @@ function ProductAdd() {
         });
     };
 
-    const navigate = useNavigate();
+    const handleCategoryChange = (e) => {
+        const { value } = e.target;
+        setProductData({
+            ...productData,
+            category: value
+        });
+        setShowSuggestions(true);
+    };
 
+    const handleCategoryClick = (category) => {
+        setProductData({
+            ...productData,
+            category
+        });
+        setShowSuggestions(false);
+    };
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
     };
 
+    const navigate = useNavigate();
     const token = localStorage.getItem('jwtToken');
-    console.log(token)
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -37,14 +59,11 @@ function ProductAdd() {
         formData.append('image', file);
 
         try {
-            // Загрузка изображения на сервер
             const uploadResponse = await axios.post('/api/upload', formData);
-            // Обновление данных о продукте с URL-адресом изображения
             const product = {
                 ...productData,
                 imageUrl: `/uploads/${uploadResponse.data.file.filename}`
             };
-            // Добавление данных о продукте на сервер
             await axios.post('/api/products/many', [
                 product
             ], {
@@ -93,10 +112,26 @@ function ProductAdd() {
                     <input className="checkout__input-item" type="number" name="price" value={productData.price} onChange={handleChange} required />
                 </label>
                 <label className="checkout__input">
-
                     <div>Категория</div>
-
-                    <input  className="checkout__input-item" type="text" name="category" value={productData.category} onChange={handleChange} required />
+                    <input
+                        className="checkout__input-item"
+                        type="text"
+                        name="category"
+                        value={productData.category}
+                        onChange={handleCategoryChange}
+                        onFocus={() => setShowSuggestions(true)}
+                        onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                        required
+                    />
+                    {showSuggestions && (
+                        <ul className="order__add" >
+                            {categories.filter(cat => cat.includes(productData.category)).map((category, index) => (
+                                <li key={index} onClick={() => handleCategoryClick(category)}>
+                                    {category}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </label>
                 <label className="checkout__input">
                     <div>Подкатегория</div>
