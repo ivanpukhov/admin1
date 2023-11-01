@@ -2,6 +2,20 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+// Модальное окно
+function Modal({ isOpen, message, onClose }) {
+    if (!isOpen) return null;
+
+    return (
+        <div className="modal">
+            <div className="modal-content">
+                <span className="close" onClick={onClose}>&times;</span>
+                <p>{message}</p>
+            </div>
+        </div>
+    );
+}
+
 function ProductAdd() {
     const [categories, setCategories] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -14,6 +28,8 @@ function ProductAdd() {
         imageUrl: '',
     });
     const [file, setFile] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMessage, setModalMessage] = useState("");
 
     useEffect(() => {
         axios.get('/api/products/categories').then(response => {
@@ -64,17 +80,17 @@ function ProductAdd() {
                 ...productData,
                 imageUrl: `/uploads/${uploadResponse.data.file.filename}`
             };
-            await axios.post('/api/products/many', [
-                product
-            ], {
+            await axios.post('/api/products/many', [product], {
                 headers: {
                     Authorization: 'Bearer ' + token
                 }
             });
-            alert('Product added successfully');
+            setModalMessage('Product added successfully');
+            setIsModalOpen(true);
         } catch (error) {
             console.error('Error during product addition:', error);
-            alert('Failed to add product');
+            setModalMessage('Failed to add product');
+            setIsModalOpen(true);
         }
     };
 
@@ -144,6 +160,8 @@ function ProductAdd() {
                 </label>
                 <button className="checkout__btn" type="submit">Создать продукт</button>
             </form>
+            <Modal isOpen={isModalOpen} message={modalMessage} onClose={() => setIsModalOpen(false)} />
+
         </div>
     );
 }
