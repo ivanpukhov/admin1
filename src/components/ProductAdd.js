@@ -16,6 +16,7 @@ function Modal({ isOpen, message, onClose }) {
     );
 }
 
+
 function ProductAdd() {
     const [categories, setCategories] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
