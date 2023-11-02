@@ -18,15 +18,9 @@ const ProductDetail = () => {
     // Загрузка данных о товаре
     useEffect(() => {
         const fetchData = async () => {
-            const token = localStorage.getItem('jwtToken');
-
             try {
                 setLoading(true);
-                const response = await axios.get(`/api/products/${id}`, {
-                    headers: {
-                        Authorization: 'Bearer ' + token
-                    }
-                });
+                const response = await axios.get(`/api/products/${id}`);
                 setProduct(response.data);
             } catch (err) {
                 setError('Не удалось загрузить данные');
@@ -38,14 +32,25 @@ const ProductDetail = () => {
     }, [id]);
 
     const handleAvailabilityChange = async (e) => {
-        const isAvailable = e.target.checked ? 1 : 0; // Преобразование состояния чекбокса в значение для isAvailable
+        const isAvailable = e.target.checked ? 1 : 0;
         try {
-            await axios.put(`/api/products/${id}`, { ...product, isAvailable }); // Отправка обновленного состояния на сервер
-            setProduct({ ...product, isAvailable }); // Обновление состояния продукта
+            // Получение токена из локального хранилища
+            const token = localStorage.getItem('token');
+
+            // Установка заголовка аутентификации
+            const config = {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            };
+
+            await axios.put(`/api/products/${id}`, { ...product, isAvailable }, config); // Отправка запроса с заголовком аутентификации
+            setProduct({ ...product, isAvailable });
         } catch (error) {
             console.error('Error updating product availability:', error);
         }
     };
+
     const handleGoBack = () => {
         navigate(-1);
     };
