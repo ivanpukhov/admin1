@@ -10,7 +10,22 @@ const ProductDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const token = localStorage.getItem('jwtToken');
 
+    const handleToggleAvailability = async () => {
+        try {
+            const updatedProduct = {
+                ...product,
+                isAvailable: product.isAvailable ? 0 : 1
+            };
+            await axios.put(`/api/products/${id}`, updatedProduct, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setProduct(updatedProduct); // Обновляем состояние продукта
+        } catch (err) {
+            setError('Не удалось обновить статус доступности товара');
+        }
+    };
 
     // Проверить, находится ли товар в избранном
 
@@ -31,25 +46,6 @@ const ProductDetail = () => {
         fetchData();
     }, [id]);
 
-    const handleAvailabilityChange = async (e) => {
-        const isAvailable = e.target.checked ? 1 : 0;
-        try {
-            // Получение токена из локального хранилища
-            const token = localStorage.getItem('jwtToken');
-
-            // Установка заголовка аутентификации
-            const config = {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            };
-
-            await axios.put(`/api/products/${id}`, { ...product, isAvailable }, config); // Отправка запроса с заголовком аутентификации
-            setProduct({ ...product, isAvailable });
-        } catch (error) {
-            console.error('Error updating product availability:', error);
-        }
-    };
 
     const handleGoBack = () => {
         navigate(-1);
@@ -132,15 +128,10 @@ const ProductDetail = () => {
                     {product.description}
                 </div>
             </div>
-            <p className="detail__price-text">Наличие
-                <input
-                    type="checkbox"
-                    checked={product.isAvailable === 1} // Установка состояния чекбокса на основе isAvailable
-                    onChange={handleAvailabilityChange} // Привязка обработчика изменения
-                />
-            </p>
             <ProductDelete productId={id} />
-
+            <button className="detail__btn" onClick={handleToggleAvailability}>
+                {product.isAvailable ? 'Убрать товар' : 'Вернуть товар'}
+            </button>
 
             <Link to={`/products/${id}/edit`} className="detail__btn ">
                 Изменить товар
