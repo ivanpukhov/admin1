@@ -35,7 +35,7 @@ const ProductDetail = () => {
         const isAvailable = e.target.checked ? 1 : 0;
         try {
             // Получение токена из локального хранилища
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('jwtToken');
 
             // Установка заголовка аутентификации
             const config = {
