@@ -14,14 +14,11 @@ const ProductDetail = () => {
 
     const handleToggleAvailability = async () => {
         try {
-            const updatedProduct = {
-                ...product,
-                isAvailable: product.isAvailable ? 0 : 1
-            };
-            await axios.put(`/api/products/${id}`, updatedProduct, {
+            const updatedAvailability = { isAvailable: product.isAvailable ? 0 : 1 };
+            await axios.put(`/api/products/${id}/availability`, updatedAvailability, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setProduct(updatedProduct); // Обновляем состояние продукта
+            setProduct(prevProduct => ({ ...prevProduct, isAvailable: updatedAvailability.isAvailable })); // Обновляем состояние продукта
         } catch (err) {
             setError('Не удалось обновить статус доступности товара');
         }
