@@ -18,9 +18,15 @@ const ProductDetail = () => {
     // Загрузка данных о товаре
     useEffect(() => {
         const fetchData = async () => {
+            const token = localStorage.getItem('jwtToken');
+
             try {
                 setLoading(true);
-                const response = await axios.get(`/api/products/${id}`);
+                const response = await axios.get(`/api/products/${id}`, {
+                    headers: {
+                        Authorization: 'Bearer ' + token
+                    }
+                });
                 setProduct(response.data);
             } catch (err) {
                 setError('Не удалось загрузить данные');
