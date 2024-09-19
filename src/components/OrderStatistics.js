@@ -1,89 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import styled from "styled-components";
+import { Container, Typography, TextField, Button, Grid, Card, CardContent, CircularProgress, Alert, Box } from '@mui/material';
+import { styled } from '@mui/system';
+import * as XLSX from 'xlsx';
 
-const Container = styled.div`
-  font-family: 'Arial', sans-serif;
-  background-color: #f4f4f4;
-  padding: 1rem;
-
-  @media (min-width: 768px) {
-    padding: 2rem;
-  }
-`;
-
-const Header = styled.h1`
-  color: #333;
-  margin-bottom: 1rem;
-`;
-
-const FilterSection = styled.div`
-  background: #fff;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-  flex-direction: column;
-  align-items: flex-start;
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-    align-items: center;
-  }
-`;
-
-const Label = styled.label`
-  margin: 0.5rem;
-  font-weight: bold;
-`;
-
-const Input = styled.input`
-  margin: 0.5rem;
-  padding: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-`;
-
-const Button = styled.button`
-  margin: 0.5rem;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  background-color: #0CE3CB;
-  color: #515151;
-  border: none;
-  font-weight: 600;
-  width: 100%;
-  border-radius: 4px;
-
-  &:hover {
-    background-color: #0056b3;
-  }
-`;
-
-const Card = styled.div`
-  background: #fff;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin: 0.5rem;
-  flex: 1;
-  text-align: center;
-  width: 100%;
-`;
-
-const StatisticsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-`;
-
-
-// Функция для конвертации числового статуса в строку
 const getStatusDescription = (status) => {
     switch (status) {
         case "1":
@@ -97,15 +17,16 @@ const getStatusDescription = (status) => {
     }
 };
 
-
-
-// Функция для форматирования даты
 const formatDate = (date) => {
     return date.toISOString().split('T')[0];
 };
 
+const StyledButton = styled(Button)({
+    borderRadius: '20px',
+    margin: '5px',
+});
+
 const OrderStatistics = () => {
-    // Устанавливаем сегодняшнюю дату как дату по умолчанию
     const today = new Date();
     const [statistics, setStatistics] = useState(null);
     const [startDate, setStartDate] = useState(formatDate(today));
@@ -136,6 +57,28 @@ const OrderStatistics = () => {
         setLoading(false);
     };
 
+    const exportToExcel = () => {
+        if (!statistics || !statistics.orders || statistics.orders.length === 0) return;
+
+        const ordersForExport = statistics.orders.map(order => ({
+            'Заказ №': order.id,
+            'Имя': `${order.firstName} ${order.lastName}`,
+            'Телефон': order.phoneNumber,
+            'Адрес': order.address,
+            'Продукты': order.products.map(p => `${p.name} (Кол-во: ${p.quantity})`).join(', '),
+            'Доставка': order.deliveryMethod,
+            'Оплата': order.paymentMethod,
+            'Статус': getStatusDescription(order.status),
+            'Общая стоимость': order.totalCost,
+            'Дата заказа': new Date(order.createdAt).toLocaleDateString()
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(ordersForExport);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Orders");
+        XLSX.writeFile(workbook, `orders_${formatDate(new Date())}.xlsx`);
+    };
+
     const setToday = () => {
         const today = new Date();
         setStartDate(formatDate(today));
@@ -163,52 +106,91 @@ const OrderStatistics = () => {
     }, [startDate, endDate]);
 
     return (
-        <Container>
-            <Header>Статистика по заказам</Header>
-            <FilterSection>
-                <Label>Начальная дата:</Label>
-                <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                <Label>Конечная дата:</Label>
-                <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-                <Button onClick={fetchStatistics}>Обновить статистику</Button>
-                <Button onClick={setToday}>За сегодня</Button>
-                <Button onClick={setLastWeek}>За последнюю неделю</Button>
-                <Button onClick={setLastMonth}>За последний месяц</Button>
-            </FilterSection>
-            {loading && <h2>Загрузка...</h2>}
-            {error && <h2>Ошибка: {error}</h2>}
+        <Container maxWidth="lg">
+
+            <Grid container spacing={3} justifyContent="center">
+                <Grid item xs={12} sm={6} md={3}>
+                    <TextField
+                        label="Начальная дата"
+                        type="date"
+                        fullWidth
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        InputLabelProps={{ shrink: true }}
+                        variant="outlined"
+                        sx={{ borderRadius: '10px' }}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                    <TextField
+                        label="Конечная дата"
+                        type="date"
+                        fullWidth
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        InputLabelProps={{ shrink: true }}
+                        variant="outlined"
+                        sx={{ borderRadius: '10px' }}
+                    />
+                </Grid>
+            </Grid>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                <StyledButton variant="contained" color="primary" onClick={fetchStatistics}>
+                    Обновить статистику
+                </StyledButton>
+                <StyledButton variant="outlined" color="primary" onClick={setToday}>
+                    За сегодня
+                </StyledButton>
+                <StyledButton variant="outlined" color="primary" onClick={setLastWeek}>
+                    За последнюю неделю
+                </StyledButton>
+                <StyledButton variant="outlined" color="primary" onClick={setLastMonth}>
+                    За последний месяц
+                </StyledButton>
+                <StyledButton variant="contained" color="secondary" onClick={exportToExcel}>
+                    Экспорт в XLSX
+                </StyledButton>
+            </Box>
+            {loading && <CircularProgress sx={{ display: 'block', margin: '20px auto' }} />}
+            {error && <Alert severity="error">Ошибка: {error}</Alert>}
             {statistics && (
-                <StatisticsContainer>
-                    <Card>
-                        <h2>Общее количество заказов</h2>
-                        <h2>{statistics.totalOrders}</h2>
-                    </Card>
-                    <Card>
-                        <h2>Выручка</h2>
-                        <h2>{statistics.revenue} тг.</h2>
-                    </Card>
-                    <Card>
-                        <h2>Средний чек</h2>
-                        <h2>{parseFloat(statistics.averageCheck).toFixed(0)} тг.</h2>
-                    </Card>
-                    <Card>
-                        <h2>Статусы заказов</h2>
-                        <ul>
-                            {Array.isArray(statistics.statusCounts) ?
-                                statistics.statusCounts.map((item, index) => (
-                                    <li key={index}>{getStatusDescription(item.status)}: {item.count}</li>
-                                )) :
-                                Object.entries(statistics.statusCounts || {}).map(([status, count]) => (
-                                    <li key={status}>{getStatusDescription(parseInt(status))}: {count}</li>
-                                ))
-                            }
-                        </ul>
-                    </Card>
-                </StatisticsContainer>
+                <Grid container spacing={3} sx={{ mt: 3 }}>
+                    {statistics.orders && statistics.orders.length > 0 ? (
+                        statistics.orders.map((order, index) => (
+                            <Grid item xs={12} sm={6} md={4} key={index}>
+                                <Card sx={{ borderRadius: '20px' }}>
+                                    <CardContent>
+                                        <Typography variant="h6">Заказ №{order.id}</Typography>
+                                        <Typography>Имя: {order.firstName} {order.lastName}</Typography>
+                                        <Typography>Телефон: {order.phoneNumber}</Typography>
+                                        <Typography>Адрес: {order.address}</Typography>
+                                        <Typography>Продукты:</Typography>
+                                        <br/><br/>
+
+                                        <ul>
+                                            {order.products.map((product, idx) => (
+                                                <li key={idx}>
+                                                    <i>{product.name}</i> - Количество: {product.quantity}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        <br/><br/>
+                                        <Typography>Доставка: {order.deliveryMethod}</Typography>
+                                        <Typography>Оплата: {order.paymentMethod}</Typography>
+                                        <Typography>Статус: {getStatusDescription(order.status)}</Typography>
+                                        <Typography>Общая стоимость: {order.totalCost} тг.</Typography>
+                                        <Typography>Дата заказа: {new Date(order.createdAt).toLocaleDateString()}</Typography>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        ))
+                    ) : (
+                        <Typography>Заказы не найдены за указанный период.</Typography>
+                    )}
+                </Grid>
             )}
         </Container>
     );
 };
-
 
 export default OrderStatistics;
