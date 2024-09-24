@@ -72,7 +72,6 @@ function ProductInfo() {
                         Authorization: 'Bearer ' + token,
                     },
                 });
-                // Обновляем содержимое страницы
                 await fetchOrder();
                 setSearchQuery("");
                 setSearchResults([]);
@@ -83,11 +82,15 @@ function ProductInfo() {
         }
     };
 
+    // Обновляем функцию расчета итоговой стоимости с учетом категории discont
     const calculateTotalPrice = (products) => {
-        return products.reduce((acc, product) => acc + product.price * product.quantity, 0);
+        return products.reduce((acc, product) => {
+            if (product.category === 'discont') {
+                return acc + product.price * product.quantity; // Товар без скидки
+            }
+            return acc + product.price * product.quantity * 0.95; // Применяем скидку
+        }, 0);
     };
-
-
 
     const deleteOrder = async () => {
         try {
@@ -149,7 +152,8 @@ function ProductInfo() {
                 return {
                     ...product,
                     name: response.data.name,
-                    price: response.data.price
+                    price: response.data.price,
+                    category: response.data.category // Добавляем информацию о категории продукта
                 };
             });
             const productsWithData = await Promise.all(productPromises);
@@ -162,6 +166,7 @@ function ProductInfo() {
     if (!order || !products) {
         return <div>Loading...</div>;
     }
+
     const updateProductQuantity = async (productId, currentQuantity) => {
         const newQuantity = prompt(`Введите новое количество для товара с ID ${productId}`, currentQuantity);
 
@@ -195,8 +200,7 @@ function ProductInfo() {
         }
     };
 
-    const totalPrice = calculateTotalPrice(products); // Вызов функции для расчета общей стоимости
-
+    const totalPrice = calculateTotalPrice(products);
 
     return (
         <div className="fa">
@@ -214,8 +218,7 @@ function ProductInfo() {
                 {products.map(product => (
                     <li className="order__product" key={product.id}>
                         <button onClick={() => updateProductQuantity(product.id, product.quantity)}>🔄</button> {/* Новая кнопка */}
-
-                        {product.name} <br/> (Количество: {product.quantity}) {product.price * product.quantity * 0.95} тг.
+                        {product.name} <br/> (Количество: {product.quantity}) {product.price * product.quantity} тг.
                         <button onClick={() => deleteProductFromOrder(product.id)}>❌</button>
                     </li>
                 ))}
@@ -241,9 +244,7 @@ function ProductInfo() {
             </div>
 
             <div className="checkout__price">
-                Общая стоимость: <br/> {totalPrice} тг {/* Вывод общей стоимости */}
-                - 5% = {totalPrice*0.95} тг. {/* Вывод общей стоимости */}
-
+                Общая стоимость: <br/> {totalPrice.toFixed(2)} тг {/* Вывод общей стоимости с учетом категории */}
             </div>
 
             <button
@@ -268,6 +269,5 @@ function ProductInfo() {
         </div>
     );
 }
-
 
 export default ProductInfo;
