@@ -25,7 +25,7 @@ function ProductAdd() {
         category: '',
         subcategory: '',
         imageUrl: '',
-        discont: false, // Добавляем поле для скидки
+        discont: 5, // По умолчанию скидка 5%, если не выбрана категория discont
     });
     const [file, setFile] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,10 +44,10 @@ function ProductAdd() {
     }, []);
 
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
+        const { name, value } = e.target;
         setProductData({
             ...productData,
-            [name]: type === 'checkbox' ? checked : value // Обработка чекбокса для скидки
+            [name]: value
         });
     };
 
@@ -55,7 +55,8 @@ function ProductAdd() {
         const { value } = e.target;
         setProductData({
             ...productData,
-            category: value
+            category: value,
+            discont: value === 'discont' ? 0 : 5, // Если выбрана категория discont, скидка по умолчанию 0, иначе 5
         });
         setShowSuggestions(true);
     };
@@ -63,13 +64,24 @@ function ProductAdd() {
     const handleCategoryClick = (category) => {
         setProductData({
             ...productData,
-            category
+            category,
+            discont: category === 'discont' ? 0 : 5, // Устанавливаем скидку в зависимости от категории
         });
         setShowSuggestions(false);
     };
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
+    };
+
+    const handleDiscountChange = (e) => {
+        const value = parseInt(e.target.value);
+        if (value >= 0 && value <= 100) {
+            setProductData({
+                ...productData,
+                discont: value
+            });
+        }
     };
 
     const navigate = useNavigate();
@@ -153,6 +165,23 @@ function ProductAdd() {
                         </ul>
                     )}
                 </label>
+
+                {productData.category === 'discont' && (
+                    <label className="checkout__input">
+                        <div>Скидка (%)</div>
+                        <input
+                            className="checkout__input-item"
+                            type="number"
+                            name="discont"
+                            value={productData.discont}
+                            onChange={handleDiscountChange}
+                            min="0"
+                            max="100"
+                            required
+                        />
+                    </label>
+                )}
+
                 <label className="checkout__input">
                     <div>Подкатегория</div>
                     <input className="checkout__input-item" type="text" name="subcategory" value={productData.subcategory} onChange={handleChange} required />
@@ -160,15 +189,6 @@ function ProductAdd() {
                 <label className="checkout__input">
                     <div>Изображение</div>
                     <input type="file" onChange={handleFileChange} required />
-                </label>
-                <label className="checkout__input">
-                    <div>Добавить в категорию скидки</div>
-                    <input
-                        type="checkbox"
-                        name="discont"
-                        checked={productData.discont}
-                        onChange={handleChange}
-                    />
                 </label>
                 <button className="checkout__btn" type="submit">Создать продукт</button>
             </form>
