@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -26,6 +25,7 @@ function ProductAdd() {
         category: '',
         subcategory: '',
         imageUrl: '',
+        discont: false, // Добавляем поле для скидки
     });
     const [file, setFile] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,10 +44,10 @@ function ProductAdd() {
     }, []);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type, checked } = e.target;
         setProductData({
             ...productData,
-            [name]: value
+            [name]: type === 'checkbox' ? checked : value // Обработка чекбокса для скидки
         });
     };
 
@@ -160,6 +160,15 @@ function ProductAdd() {
                 <label className="checkout__input">
                     <div>Изображение</div>
                     <input type="file" onChange={handleFileChange} required />
+                </label>
+                <label className="checkout__input">
+                    <div>Добавить в категорию скидки</div>
+                    <input
+                        type="checkbox"
+                        name="discont"
+                        checked={productData.discont}
+                        onChange={handleChange}
+                    />
                 </label>
                 <button className="checkout__btn" type="submit">Создать продукт</button>
             </form>
